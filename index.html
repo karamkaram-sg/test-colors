@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Port Base Colors Editor</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-2: #1f2937;
+        --border: #334155;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(56, 189, 248, 0.12),
+            transparent 25%
+          ),
+          radial-gradient(
+            circle at top left,
+            rgba(139, 92, 246, 0.1),
+            transparent 20%
+          ),
+          var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .container {
+        width: min(1400px, calc(100% - 32px));
+        margin: 24px auto 40px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      select {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 10px 12px;
+        min-height: 42px;
+        outline: none;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        margin-top: 6px;
+        font-size: 14px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        border-color: var(--accent);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #0284c7, #2563eb);
+        border-color: transparent;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #b91c1c, #ef4444);
+        border-color: transparent;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #15803d, #22c55e);
+        border-color: transparent;
+      }
+
+      .panel {
+        background: rgba(17, 24, 39, 0.9);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+
+      .add-form {
+        display: grid;
+        grid-template-columns: 120px 1fr 120px 120px 120px auto;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 18px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 10px 12px;
+        min-height: 42px;
+        outline: none;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+        gap: 16px;
+      }
+
+      .port-card {
+        border: 1px solid var(--border);
+        background: linear-gradient(
+          180deg,
+          rgba(31, 41, 55, 0.95),
+          rgba(15, 23, 42, 0.95)
+        );
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .port-top {
+        padding: 14px 14px 10px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      }
+
+      .port-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .port-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .port-code {
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .port-name {
+        font-size: 20px;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      .port-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .swatch-wrap {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 14px;
+      }
+
+      .swatch {
+        width: 64px;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        flex-shrink: 0;
+      }
+
+      .swatch-editable {
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .swatch-editable:hover {
+        transform: scale(1.04);
+        border-color: rgba(255, 255, 255, 0.28);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 0 0 4px rgba(56, 189, 248, 0.12);
+      }
+
+      .swatch-text {
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        color: var(--muted);
+        word-break: break-word;
+      }
+
+      .variants {
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .terminal-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .terminal-item {
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .terminal-code {
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        color: #cbd5e1;
+        margin-bottom: 8px;
+      }
+
+      .terminal-preview {
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .terminal-css {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        font-family: Consolas, monospace;
+        word-break: break-word;
+        line-height: 1.5;
+      }
+
+      .footer-note {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .empty-state {
+        padding: 30px;
+        text-align: center;
+        color: var(--muted);
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+      }
+
+      .toast {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 12px 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(8px);
+        transition: 0.2s ease;
+        z-index: 999;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hidden-color-input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+      }
+
+      @media (max-width: 980px) {
+        .add-form {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .port-head {
+          flex-direction: column;
+        }
+
+        .port-actions {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div>
+          <h1>Port Base Colors Editor</h1>
+          <!-- <div class="subtitle">
+            Click the base color to edit it directly. Export format remains:
+            <code>{ portCode: { name, h, s, l } }</code>
+          </div> -->
+        </div>
+
+        <div class="toolbar">
+          <button id="copyJsonBtn">Copy JSON</button>
+          <button id="downloadJsonBtn" class="btn-primary">
+            Download JSON
+          </button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <!-- <div class="add-form">
+          <div class="field">
+            <label for="newPortCode">Port Code</label>
+            <input
+              id="newPortCode"
+              type="text"
+              maxlength="5"
+              placeholder="BEANR"
+            />
+          </div>
+
+          <div class="field">
+            <label for="newPortName">Port Name</label>
+            <input id="newPortName" type="text" placeholder="Antwerp" />
+          </div>
+
+          <div class="field">
+            <label for="newPortH">H</label>
+            <input
+              id="newPortH"
+              type="number"
+              min="0"
+              max="359"
+              placeholder="0"
+            />
+          </div>
+
+          <div class="field">
+            <label for="newPortS">S</label>
+            <input
+              id="newPortS"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="60"
+            />
+          </div>
+
+          <div class="field">
+            <label for="newPortL">L</label>
+            <input
+              id="newPortL"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="45"
+            />
+          </div>
+
+          <button id="addPortBtn" class="btn-success">Add Port</button>
+        </div> -->
+
+        <div
+          style="
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 18px;
+          "
+        >
+          <div class="field" style="width: 220px">
+            <!-- <label for="variantPreset">Terminal Variant Width</label>
+            <select id="variantPreset">
+              <option value="soft">Soft</option>
+              <option value="medium">Medium</option>
+              <option value="strong" selected>Strong</option>
+            </select> -->
+          </div>
+        </div>
+
+        <div id="portsGrid" class="grid"></div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const state = {
+        variantPreset: "strong",
+        portBaseColors: {
+          FRLEH: { name: "Le Havre", h: 220, s: 75, l: 36 },
+          GBFXT: { name: "Felixstowe", h: 245, s: 70, l: 48 },
+          FRDKK: { name: "Dunkerque", h: 200, s: 85, l: 66 },
+          DEBRV: { name: "Bremerhaven", h: 315, s: 85, l: 50 },
+          PLGDN: { name: "Gdansk", h: 325, s: 75, l: 60 },
+          BEZEE: { name: "Zeebrugge", h: 270, s: 65, l: 52 },
+          BEANR: { name: "Antwerp", h: 0, s: 0, l: 55 },
+          NLRTM: { name: "Rotterdam", h: 30, s: 85, l: 52 },
+          DEHAM: { name: "Hamburg", h: 52, s: 85, l: 52 },
+          GBSOU: { name: "Southampton", h: 0, s: 78, l: 52 },
+          MAPTM: { name: "Tanger", h: 135, s: 60, l: 42 },
+        },
+      };
+
+      const sampleTerminalsByPort = {
+        BEANR: ["BEANRDDPW", "BEANRDICO", "BEANRD718"],
+        BEZEE: ["BEZEEDAPM", "BEZEEDCHZ", "BEZEED511"],
+        NLRTM: ["NLRTMDAPM", "NLRTMDDDE", "NLRTMDECT"],
+        DEHAM: ["DEHAMDSWT", "DEHAMDTCT", "DEHAMDBUR"],
+        DEBRV: ["DEBRVDEUR", "DEBRVDNTB", "DEBRVDMSC"],
+        FRLEH: ["FRLEHD20", "FRLEHDASI", "FRLEHDTDF"],
+        FRDKK: ["FRDKKD21", "FRDKKDBAR", "FRDKKDPRO"],
+        PLGDN: ["PLGDNDGDN", "PLGDNDDCT", "PLGDNDREM"],
+        GBSOU: ["GBSOUDSRO", "GBSOUDDPW", "GBSOUDPEN"],
+        GBFXT: ["GBFXTTTTY", "GBFXTTLNG", "GBFXTDELD"],
+        MAPTM: ["MAPTMDMED", "MAPTMDAPM", "MAPTMDTC3"],
+      };
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2200);
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function normalizeHue(hue) {
+        return ((hue % 360) + 360) % 360;
+      }
+
+      function hashString(value) {
+        let hash = 0;
+
+        for (let i = 0; i < value.length; i++) {
+          hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+        }
+
+        return hash;
+      }
+
+      function serviceToHsl(code) {
+        const hash = hashString(code);
+        return { h: hash % 360, s: 60 };
+      }
+
+      function hslToHex(h, s, l) {
+        s /= 100;
+        l /= 100;
+
+        const c = (1 - Math.abs(2 * l - 1)) * s;
+        const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+        const m = l - c / 2;
+
+        let r = 0;
+        let g = 0;
+        let b = 0;
+
+        if (h >= 0 && h < 60) {
+          r = c;
+          g = x;
+        } else if (h >= 60 && h < 120) {
+          r = x;
+          g = c;
+        } else if (h >= 120 && h < 180) {
+          g = c;
+          b = x;
+        } else if (h >= 180 && h < 240) {
+          g = x;
+          b = c;
+        } else if (h >= 240 && h < 300) {
+          r = x;
+          b = c;
+        } else {
+          r = c;
+          b = x;
+        }
+
+        const toHex = (v) =>
+          Math.round((v + m) * 255)
+            .toString(16)
+            .padStart(2, "0");
+
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+      }
+
+      function hexToHsl(hex) {
+        let r = 0;
+        let g = 0;
+        let b = 0;
+
+        const cleaned = hex.replace("#", "");
+
+        if (cleaned.length === 3) {
+          r = parseInt(cleaned[0] + cleaned[0], 16);
+          g = parseInt(cleaned[1] + cleaned[1], 16);
+          b = parseInt(cleaned[2] + cleaned[2], 16);
+        } else {
+          r = parseInt(cleaned.slice(0, 2), 16);
+          g = parseInt(cleaned.slice(2, 4), 16);
+          b = parseInt(cleaned.slice(4, 6), 16);
+        }
+
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const delta = max - min;
+
+        let h = 0;
+        let s = 0;
+        const l = (max + min) / 2;
+
+        if (delta !== 0) {
+          s = delta / (1 - Math.abs(2 * l - 1));
+
+          switch (max) {
+            case r:
+              h = 60 * (((g - b) / delta) % 6);
+              break;
+            case g:
+              h = 60 * ((b - r) / delta + 2);
+              break;
+            case b:
+              h = 60 * ((r - g) / delta + 4);
+              break;
+          }
+        }
+
+        return {
+          h: Math.round(normalizeHue(h)),
+          s: Math.round(s * 100),
+          l: Math.round(l * 100),
+        };
+      }
+
+      function getTerminalVariant(terminalCode) {
+        const hash = hashString(terminalCode);
+        const { hRange, sRange, lRange } = getVariantPresetConfig();
+
+        return {
+          hShift: (hash % (hRange * 2 + 1)) - hRange,
+          sShift: (Math.floor(hash / 31) % (sRange * 2 + 1)) - sRange,
+          lShift: (Math.floor(hash / 589) % (lRange * 2 + 1)) - lRange,
+        };
+      }
+
+      function getVesselColor(terminalCode) {
+        const code = (terminalCode || "DEFAULT").trim().toUpperCase();
+        const portCode = code.slice(0, 5);
+        const base = state.portBaseColors[portCode];
+
+        if (!base) {
+          const { h, s } = serviceToHsl(code);
+          return `hsl(${h}, ${s}%, 45%)`;
+        }
+
+        const variant = getTerminalVariant(code);
+
+        let h = base.h;
+        let s;
+        let l;
+
+        if (base.s <= 10) {
+          h = base.h;
+          s = clamp(base.s + variant.sShift, 0, 18);
+          l = clamp(base.l + variant.lShift, 28, 72);
+        } else {
+          h = normalizeHue(base.h + variant.hShift);
+          s = clamp(base.s + variant.sShift, 35, 95);
+          l = clamp(base.l + variant.lShift, 28, 72);
+        }
+
+        return `hsl(${h}, ${s}%, ${l}%)`;
+      }
+
+      function getExportObject() {
+        const sortedKeys = Object.keys(state.portBaseColors).sort();
+        const result = {};
+
+        for (const key of sortedKeys) {
+          result[key] = {
+            name: state.portBaseColors[key].name,
+            h: Number(state.portBaseColors[key].h),
+            s: Number(state.portBaseColors[key].s),
+            l: Number(state.portBaseColors[key].l),
+          };
+        }
+
+        return {
+          variantPreset: state.variantPreset,
+          portBaseColors: result,
+        };
+      }
+
+      function copyJson() {
+        const json = JSON.stringify(getExportObject(), null, 2);
+
+        navigator.clipboard
+          .writeText(json)
+          .then(() => showToast("JSON copied to clipboard"))
+          .catch(() => showToast("Copy failed"));
+      }
+
+      function downloadJson() {
+        const json = JSON.stringify(getExportObject(), null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "portBaseColors.json";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+        showToast("JSON file downloaded");
+      }
+
+      function removePort(portCode) {
+        if (!state.portBaseColors[portCode]) return;
+        delete state.portBaseColors[portCode];
+        delete sampleTerminalsByPort[portCode];
+        render();
+        showToast(`${portCode} removed`);
+      }
+
+      function addPort() {
+        const codeInput = document.getElementById("newPortCode");
+        const nameInput = document.getElementById("newPortName");
+        const hInput = document.getElementById("newPortH");
+        const sInput = document.getElementById("newPortS");
+        const lInput = document.getElementById("newPortL");
+
+        const code = codeInput.value.trim().toUpperCase();
+        const name = nameInput.value.trim();
+        const h = Number(hInput.value);
+        const s = Number(sInput.value);
+        const l = Number(lInput.value);
+
+        if (!/^[A-Z0-9]{5}$/.test(code)) {
+          showToast("Port code must be exactly 5 characters");
+          return;
+        }
+
+        if (!name) {
+          showToast("Port name is required");
+          return;
+        }
+
+        if (Number.isNaN(h) || Number.isNaN(s) || Number.isNaN(l)) {
+          showToast("H, S, L are required");
+          return;
+        }
+
+        state.portBaseColors[code] = {
+          name,
+          h: normalizeHue(h),
+          s: clamp(s, 0, 100),
+          l: clamp(l, 0, 100),
+        };
+
+        if (!sampleTerminalsByPort[code]) {
+          sampleTerminalsByPort[code] = [
+            `${code}1001`,
+            `${code}2001`,
+            `${code}3001`,
+          ];
+        }
+
+        codeInput.value = "";
+        nameInput.value = "";
+        hInput.value = "";
+        sInput.value = "";
+        lInput.value = "";
+
+        render();
+        showToast(`${code} added`);
+      }
+
+      function updatePortColorFromHex(portCode, hex) {
+        if (!state.portBaseColors[portCode]) return;
+
+        const { h, s, l } = hexToHsl(hex);
+
+        state.portBaseColors[portCode].h = h;
+        state.portBaseColors[portCode].s = s;
+        state.portBaseColors[portCode].l = l;
+
+        render();
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function render() {
+        const portsGrid = document.getElementById("portsGrid");
+        const entries = Object.entries(state.portBaseColors);
+
+        if (!entries.length) {
+          portsGrid.innerHTML =
+            '<div class="empty-state">No ports configured yet.</div>';
+          return;
+        }
+
+        portsGrid.innerHTML = entries
+          .map(([portCode, data]) => {
+            const baseColor = `hsl(${data.h}, ${data.s}%, ${data.l}%)`;
+            const baseHex = hslToHex(data.h, data.s, data.l);
+            const terminals = sampleTerminalsByPort[portCode] || [
+              `${portCode}1001`,
+              `${portCode}2001`,
+              `${portCode}3001`,
+            ];
+
+            const variantsHtml = terminals
+              .map((terminalCode) => {
+                const color = getVesselColor(terminalCode);
+                const variant = getTerminalVariant(terminalCode);
+
+                return `
+            <div class="terminal-item">
+              <div class="terminal-code">${escapeHtml(terminalCode)}</div>
+              <div class="terminal-preview" style="background: ${color};"></div>
+              <div class="terminal-css">
+                output: ${escapeHtml(color)}<br>
+                variant: hShift=${variant.hShift}, sShift=${variant.sShift}, lShift=${variant.lShift}
+              </div>
+            </div>
+          `;
+              })
+              .join("");
+
+            return `
+          <div class="port-card">
+            <div class="port-top">
+              <div class="port-head">
+                <div class="port-title">
+                  <div class="port-code">${escapeHtml(portCode)}</div>
+                  <div class="port-name">${escapeHtml(data.name || portCode)}</div>
+                </div>
+
+                <div class="port-actions">
+                  <!-- <button class="btn-danger" data-remove-port="${escapeHtml(portCode)}">Remove</button> -->
+                </div>
+              </div>
+
+              <div class="swatch-wrap">
+                <div
+                  class="swatch swatch-editable"
+                  style="background: ${baseColor};"
+                  data-open-color-picker="${escapeHtml(portCode)}"
+                  title="Click to edit color"
+                ></div>
+
+                <input
+                  class="hidden-color-input"
+                  type="color"
+                  value="${baseHex}"
+                  data-color-input="${escapeHtml(portCode)}"
+                />
+
+                <div class="swatch-text">
+                  base: ${escapeHtml(baseColor)}<br>
+                  map: { name: "${escapeHtml(data.name)}", h: ${data.h}, s: ${data.s}, l: ${data.l} }
+                </div>
+              </div>
+            </div>
+
+            <div class="variants">
+              <div class="terminal-list">${variantsHtml}</div>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+
+        bindDynamicEvents();
+      }
+
+      function bindDynamicEvents() {
+        document.querySelectorAll("[data-remove-port]").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const portCode = event.target.getAttribute("data-remove-port");
+            removePort(portCode);
+          });
+        });
+
+        document
+          .querySelectorAll("[data-open-color-picker]")
+          .forEach((swatch) => {
+            swatch.addEventListener("click", (event) => {
+              const portCode = event.currentTarget.getAttribute(
+                "data-open-color-picker",
+              );
+              const input = document.querySelector(
+                `[data-color-input="${portCode}"]`,
+              );
+
+              if (input) {
+                input.click();
+              }
+            });
+          });
+
+        document.querySelectorAll("[data-color-input]").forEach((input) => {
+          input.addEventListener("input", (event) => {
+            const portCode = event.target.getAttribute("data-color-input");
+            updatePortColorFromHex(portCode, event.target.value);
+          });
+        });
+      }
+
+      function getVariantPresetConfig() {
+        const presets = {
+          soft: {
+            hRange: 4,
+            sRange: 3,
+            lRange: 5,
+          },
+          medium: {
+            hRange: 9,
+            sRange: 6,
+            lRange: 7,
+          },
+          strong: {
+            hRange: 15,
+            sRange: 9,
+            lRange: 10,
+          },
+        };
+        return presets.medium;
+        return presets[state.variantPreset] || presets.medium;
+      }
+
+      document.getElementById("addPortBtn") &&
+        document
+          .getElementById("addPortBtn")
+          .addEventListener("click", addPort);
+      document.getElementById("copyJsonBtn") &&
+        document
+          .getElementById("copyJsonBtn")
+          .addEventListener("click", copyJson);
+      document.getElementById("downloadJsonBtn") &&
+        document
+          .getElementById("downloadJsonBtn")
+          .addEventListener("click", downloadJson);
+
+      document.getElementById("newPortCode") &&
+        document
+          .getElementById("newPortCode")
+          .addEventListener("input", (e) => {
+            e.target.value = e.target.value
+              .toUpperCase()
+              .replace(/[^A-Z0-9]/g, "")
+              .slice(0, 5);
+          });
+
+      document.getElementById("variantPreset") &&
+        document
+          .getElementById("variantPreset")
+          .addEventListener("change", (e) => {
+            state.variantPreset = e.target.value;
+            render();
+            showToast(`Variant width set to ${state.variantPreset}`);
+          });
+
+      render();
+    </script>
+  </body>
+</html>
