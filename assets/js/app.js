@@ -1,5 +1,5 @@
 (() => {
-  const { ui } = window.PortColorsConfig;
+  const { data: ui } = window.PortColorsConfig;
   const { initialState, sampleTerminalsByPort } = window.PortColorsData;
   const { escapeHtml, showToast, deepClone } = window.PortColorsUtils;
   const { normalizeHex, getVesselColor } = window.PortColorsColor;
