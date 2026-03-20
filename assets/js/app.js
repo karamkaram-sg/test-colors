@@ -247,6 +247,21 @@
     removePort(portCode);
   }
 
+  function resetPort(portCode) {
+    const original = initialState.portBaseColors[portCode];
+    if (!original || !state.portBaseColors[portCode]) return;
+
+    state.portBaseColors[portCode] = deepClone(original);
+
+    if (sampleTerminalsByPort[portCode]) {
+      terminalsByPort[portCode] = deepClone(sampleTerminalsByPort[portCode]);
+    }
+
+    saveToLocalStorage();
+    render();
+    showToast(`${portCode} reset to default`);
+  }
+
   function updatePortColorFromHex(portCode, hex, rerender = true) {
     if (!state.portBaseColors[portCode]) return;
 
@@ -522,6 +537,15 @@
                   </button>
                   <button
                     type="button"
+                    class="reset-port-button${ui.showPortResetBtn ? "" : " is-hidden"}"
+                    data-reset-port="${escapeHtml(portCode)}"
+                    aria-label="Reset ${escapeHtml(portCode)}"
+                    title="Reset port to default"
+                  >
+                    ↺
+                  </button>
+                  <button
+                    type="button"
                     class="remove-port-button${ui.enableRemovePort ? "" : " is-hidden"}"
                     data-remove-port="${escapeHtml(portCode)}"
                     aria-label="Remove ${escapeHtml(portCode)}"
@@ -624,6 +648,13 @@
       button.addEventListener("click", (event) => {
         const portCode = event.currentTarget.getAttribute("data-compare-port");
         openCompareModal(portCode);
+      });
+    });
+
+    document.querySelectorAll("[data-reset-port]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const portCode = event.currentTarget.getAttribute("data-reset-port");
+        resetPort(portCode);
       });
     });
 

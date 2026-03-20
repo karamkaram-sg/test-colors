@@ -68,26 +68,60 @@ window.PortColorsColor = (() => {
     return rawShift;
   }
 
+  function ensureMinShift(value, minimum) {
+    if (Math.abs(value) >= minimum) return value;
+    return value >= 0 ? minimum : -minimum;
+  }
+
   function getTerminalVariant(terminalCode, baseHex) {
     const hash = hashString(terminalCode);
     const baseRgb = hexToRgb(baseHex);
     const luminance = relativeLuminance(baseRgb);
 
-    const rawRShift = (hash % 17) - 8;
-    const rawGShift = (Math.floor(hash / 31) % 17) - 8;
-    const rawBShift = (Math.floor(hash / 961) % 17) - 8;
-    const rawBrightnessShift = (Math.floor(hash / 29791) % 25) - 12;
+    const rawRShift = (hash % 31) - 15;
+    const rawGShift = (Math.floor(hash / 31) % 31) - 15;
+    const rawBShift = (Math.floor(hash / 961) % 31) - 15;
+    const rawBrightnessShift = (Math.floor(hash / 29791) % 37) - 18;
 
-    const chromaScale = luminance <= 0.15 || luminance >= 0.85 ? 0.55 : 0.8;
+    const chromaScale = luminance <= 0.15 || luminance >= 0.85 ? 0.6 : 0.85;
+
+    const rShift = Math.round(rawRShift * chromaScale);
+    const gShift = Math.round(rawGShift * chromaScale);
+    const bShift = Math.round(rawBShift * chromaScale);
+    const brightnessShift = getAdaptiveBrightnessShift(
+      rawBrightnessShift,
+      luminance,
+    );
+
+    const totalShift =
+      Math.abs(rShift + brightnessShift) +
+      Math.abs(gShift + brightnessShift) +
+      Math.abs(bShift + brightnessShift);
+
+    const minPerceptible = 30;
+
+    if (totalShift < minPerceptible) {
+      const boost =
+        brightnessShift >= 0
+          ? Math.max(10, minPerceptible - totalShift)
+          : -Math.max(10, minPerceptible - totalShift);
+
+      return {
+        rShift: ensureMinShift(rShift, 5),
+        gShift: ensureMinShift(gShift, 5),
+        bShift: ensureMinShift(bShift, 5),
+        brightnessShift: ensureMinShift(
+          brightnessShift,
+          boost > 0 ? boost : -boost,
+        ),
+      };
+    }
 
     return {
-      rShift: Math.round(rawRShift * chromaScale),
-      gShift: Math.round(rawGShift * chromaScale),
-      bShift: Math.round(rawBShift * chromaScale),
-      brightnessShift: getAdaptiveBrightnessShift(
-        rawBrightnessShift,
-        luminance,
-      ),
+      rShift,
+      gShift,
+      bShift,
+      brightnessShift: ensureMinShift(brightnessShift, 8),
     };
   }
 

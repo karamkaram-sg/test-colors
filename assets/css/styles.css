@@ -247,7 +247,8 @@ input[type="color"] {
 }
 
 .compare-icon-button,
-.remove-port-button {
+.remove-port-button,
+.reset-port-button {
   width: 32px;
   height: 32px;
   display: inline-grid;
@@ -255,6 +256,18 @@ input[type="color"] {
   padding: 0;
   font-size: 16px;
   line-height: 1;
+}
+
+.reset-port-button {
+  font-size: 14px;
+  color: var(--muted);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.reset-port-button:hover {
+  border-color: var(--muted);
+  background: rgba(148, 163, 184, 0.12);
+  transform: translateY(-1px);
 }
 
 .remove-port-button {
@@ -573,21 +586,6 @@ input[type="color"] {
 
   .port-header-row {
     grid-template-columns: 64px minmax(0, 1fr) auto;
-  }
-
-  .compare-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .compare-grid {
-    grid-template-columns: 1fr;
-    row-gap: 8px;
-  }
-
-  .compare-port-color,
-  .compare-terminal-color,
-  .compare-port-swatch {
-    min-height: 56px;
   }
 }
 
