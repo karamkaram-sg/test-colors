@@ -1,0 +1,30 @@
+window.PortColorsData = {
+  initialState: {
+    portBaseColors: {
+      GBFXT: { name: "Felixstowe", color: "#3325d0" },
+      FRLEH: { name: "Le Havre", color: "#1745a1" },
+      FRDKK: { name: "Dunkerque", color: "#5fc1f2" },
+      DEBRV: { name: "Bremerhaven", color: "#ec13b6" },
+      PLGDN: { name: "Gdansk", color: "#e64ca6" },
+      BEZEE: { name: "Zeebrugge", color: "#8535d4" },
+      BEANR: { name: "Antwerp", color: "#8c8c8c" },
+      NLRTM: { name: "Rotterdam", color: "#ed851d" },
+      DEHAM: { name: "Hamburg", color: "#edd11d" },
+      GBSOU: { name: "Southampton", color: "#e42525" },
+      MAPTM: { name: "Tanger", color: "#2bab4b" },
+    },
+  },
+  sampleTerminalsByPort: {
+    BEANR: ["BEANRDDPW", "BEANRDICO", "BEANRD718"],
+    BEZEE: ["BEZEEDAPM", "BEZEEDCHZ", "BEZEED511"],
+    NLRTM: ["NLRTMDAPM", "NLRTMDDDE", "NLRTMDECT"],
+    DEHAM: ["DEHAMDSWT", "DEHAMDTCT", "DEHAMDBUR"],
+    DEBRV: ["DEBRVDEUR", "DEBRVDNTB", "DEBRVDMSC"],
+    FRLEH: ["FRLEHD20", "FRLEHDASI", "FRLEHDTDF"],
+    FRDKK: ["FRDKKD21", "FRDKKDBAR", "FRDKKDPRO"],
+    PLGDN: ["PLGDNDGDN", "PLGDNDDCT", "PLGDNDREM"],
+    GBSOU: ["GBSOUDSRO", "GBSOUDDPW", "GBSOUDPEN"],
+    GBFXT: ["GBFXTTTTY", "GBFXTTLNG", "GBFXTDELD"],
+    MAPTM: ["MAPTMDMED", "MAPTMDAPM", "MAPTMDTC3"],
+  },
+};
