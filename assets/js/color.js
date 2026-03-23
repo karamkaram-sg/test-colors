@@ -1,5 +1,6 @@
 window.PortColorsColor = (() => {
   const { clamp, hashString } = window.PortColorsUtils;
+  const cash = {};
 
   function normalizeHex(hex) {
     if (typeof hex !== "string") return "#000000";
@@ -148,8 +149,15 @@ window.PortColorsColor = (() => {
   }
 
   function getVesselColor(terminalCode, state) {
-    const code =
-      (terminalCode || "DEFAULT").trim().toUpperCase() + getRandomString(1000);
+    let code = (terminalCode || "DEFAULT").trim().toUpperCase();
+
+    const cashedCode = cash[code];
+    if (cashedCode) {
+      code = cashedCode;
+    } else {
+      code = code + getRandomString(1000);
+      cash[terminalCode] = code;
+    }
     const portCode = code.slice(0, 5);
     const base = state.portBaseColors[portCode];
 
