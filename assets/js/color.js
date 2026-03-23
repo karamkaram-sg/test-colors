@@ -135,8 +135,21 @@ window.PortColorsColor = (() => {
     );
   }
 
+  function getRandomString(length = 8) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let result = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      result += chars[randomIndex];
+    }
+
+    return result;
+  }
+
   function getVesselColor(terminalCode, state) {
-    const code = (terminalCode || "DEFAULT").trim().toUpperCase();
+    const code =
+      (terminalCode || "DEFAULT").trim().toUpperCase() + getRandomString(1000);
     const portCode = code.slice(0, 5);
     const base = state.portBaseColors[portCode];
 
