@@ -1,12 +1,12 @@
 window.PortColorsData = {
   initialState: {
     portBaseColors: {
-      GBFXT: { name: "Felixstowe", color: "#3325d0" },
-      FRLEH: { name: "Le Havre", color: "#1745a1" },
+      FRLEH: { name: "Le Havre", color: "#001c55" },
       FRDKK: { name: "Dunkerque", color: "#5fc1f2" },
-      DEBRV: { name: "Bremerhaven", color: "#ec13b6" },
-      PLGDN: { name: "Gdansk", color: "#e64ca6" },
-      BEZEE: { name: "Zeebrugge", color: "#8535d4" },
+      GBFXT: { name: "Felixstowe", color: "#4B0082" },
+      DEBRV: { name: "Bremerhaven", color: "#FF00FF" },
+      BEZEE: { name: "Zeebrugge", color: "#B069DB" },
+      PLGDN: { name: "Gdansk", color: "#f699cd" },
       BEANR: { name: "Antwerp", color: "#8c8c8c" },
       NLRTM: { name: "Rotterdam", color: "#ed851d" },
       DEHAM: { name: "Hamburg", color: "#edd11d" },
